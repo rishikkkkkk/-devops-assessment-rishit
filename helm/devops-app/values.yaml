@@ -33,8 +33,9 @@ resources:
 
 hpa:
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 3
   cpuUtilization: 70
 
 cronjob:
   schedule: "*/5 * * * *"
+
