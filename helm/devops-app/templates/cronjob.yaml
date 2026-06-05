@@ -7,19 +7,30 @@ metadata:
 
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: 1   # ✅ keep only 1 successful job
+  failedJobsHistoryLimit: 1       # ✅ keep only 1 failed job
+  concurrencyPolicy: Forbid       # ✅ skip new job if previous still running
 
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 30   # ✅ kill job if it runs longer than 30s
 
       template:
         spec:
-
-          restartPolicy: OnFailure
+          restartPolicy: Never    # ✅ changed from OnFailure — stops infinite restarts
 
           containers:
           - name: health-check
 
             image: curlimages/curl:latest
+
+            resources:            # ✅ limit resource usage
+              requests:
+                cpu: "50m"
+                memory: "32Mi"
+              limits:
+                cpu: "100m"
+                memory: "64Mi"
 
             command:
             - /bin/sh
