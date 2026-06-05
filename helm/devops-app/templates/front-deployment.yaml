@@ -10,6 +10,9 @@ spec:
 
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0        # ✅ don't create extra pod during update
+      maxUnavailable: 1  # ✅ kill old pod first on resource-constrained nodes
 
   selector:
     matchLabels:
