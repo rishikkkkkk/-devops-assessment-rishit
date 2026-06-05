@@ -1,7 +1,7 @@
 namespace: dev
 
 frontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     repository: rishikkk/frontend
@@ -12,7 +12,7 @@ frontend:
     targetPort: 8080
 
 backend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     repository: rishikkk/backend
