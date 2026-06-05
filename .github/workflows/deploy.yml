@@ -1,59 +1,225 @@
 name: Assessment CI/CD
 
 on:
+  pull_request:
+    branches:
+      - main
+
   push:
     branches:
       - main
 
+env:
+  AWS_REGION: us-east-1
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+
 jobs:
 
-  helm-lint:
+  terraform-validate:
+    if: github.event_name == 'pull_request'
+
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Helm
-        uses: azure/setup-helm@v4
+      - uses: hashicorp/setup-terraform@v3
 
-      - name: Lint Helm Chart
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+  docker-build-test:
+    if: github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    needs: terraform-validate
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend
+        run: |
+          docker build \
+            -t backend-test \
+            ./app/backend
+
+      - name: Build Frontend
+        run: |
+          docker build \
+            -t frontend-test \
+            ./app/frontend
+
+  kubernetes-lint:
+    if: github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    needs: docker-build-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+
+      - name: Helm Lint
         run: |
           helm lint helm/devops-app
 
-  docker-build-push:
+      - name: Helm Template Check
+        run: |
+          helm template devops-app helm/devops-app
+
+  upload-artifacts:
+    if: github.event_name == 'pull_request'
+
     runs-on: ubuntu-latest
 
-    needs: helm-lint
+    needs: kubernetes-lint
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Login DockerHub
+      - uses: actions/upload-artifact@v4
+        with:
+          name: helm-chart
+          path: helm/devops-app
+
+  terraform-plan-apply:
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+  docker-build-push:
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    needs: terraform-plan-apply
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Backend
       - name: Build Backend
         run: |
           docker build \
             -t rishikkk/backend:${{ github.sha }} \
-            app/backend
+            ./app/backend
 
       - name: Push Backend
         run: |
           docker push rishikkk/backend:${{ github.sha }}
 
-      # Frontend
       - name: Build Frontend
         run: |
           docker build \
             -t rishikkk/frontend:${{ github.sha }} \
-            app/frontend
+            ./app/frontend
 
       - name: Push Frontend
         run: |
           docker push rishikkk/frontend:${{ github.sha }}
+
+  deploy-to-eks:
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    needs: docker-build-push
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - uses: azure/setup-helm@v4
+
+      - name: Configure Kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region us-east-1 \
+            --name dev-cluster
+
+      - name: Deploy
+        run: |
+          helm upgrade --install \
+            devops-app \
+            helm/devops-app \
+            -n dev \
+            --create-namespace
+
+  rollout-verification:
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    needs: deploy-to-eks
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure Kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region us-east-1 \
+            --name dev-cluster \
+            --debug
+
+      - name: Verify Rollout
+        run: |
+          kubectl rollout status deployment/frontend -n dev
+          kubectl rollout status deployment/backend -n dev
+
+  smoke-test:
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    needs: rollout-verification
+
+    steps:
+      - name: API Smoke Test
+        run: |
+          echo "Smoke test placeholder"
+          echo "curl http://backend-service:3000/health"
