@@ -23,14 +23,14 @@ module "eks" {
 
   managed_node_group_defaults = {
     ami_type       = "AL2023_x86_64_STANDARD"
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.micro"]
   }
 
   managed_node_group = {
     default = {
       min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      max_size     = 2
+      desired_size = 2
 
       capacity_type = "ON_DEMAND"
 
