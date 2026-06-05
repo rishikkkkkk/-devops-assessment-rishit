@@ -16,8 +16,25 @@ module "eks" {
   cluster_name = "devops-assessment"
   environment  = var.environment
 
-  kubernetes_version = "1.32"
+  kubernetes_version = "1.33"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnet_ids
+
+  managed_node_group_defaults = {
+    ami_type       = "AL2023_x86_64_STANDARD"
+    instance_types = ["t3.micro"]
+  }
+
+  managed_node_group = {
+    default = {
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+
+      capacity_type = "ON_DEMAND"
+
+      subnet_ids = module.vpc.private_subnet_ids
+    }
+  }
 }
