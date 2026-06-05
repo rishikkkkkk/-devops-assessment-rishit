@@ -1,43 +1,44 @@
-{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+
 metadata:
-  name: {{ include "devops-app.fullname" . }}
-  labels:
-    {{- include "devops-app.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+  name: app-ingress
+  namespace: {{ .Values.namespace }}
+
 spec:
-  {{- with .Values.ingress.className }}
-  ingressClassName: {{ . }}
-  {{- end }}
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
+  ingressClassName: nginx
+
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- with .pathType }}
-            pathType: {{ . }}
-            {{- end }}
-            backend:
-              service:
-                name: {{ include "devops-app.fullname" $ }}
-                port:
-                  number: {{ $.Values.service.port }}
-          {{- end }}
-    {{- end }}
-{{- end }}
+  - http:
+
+      paths:
+
+      - path: /
+        pathType: Prefix
+
+        backend:
+          service:
+            name: frontend-service
+
+            port:
+              number: {{ .Values.frontend.service.port }}
+
+      - path: /health
+        pathType: Prefix
+
+        backend:
+          service:
+            name: backend-service
+
+            port:
+              number: {{ .Values.backend.service.port }}
+
+      - path: /metrics
+        pathType: Prefix
+
+        backend:
+          service:
+            name: backend-service
+
+            port:
+              number: {{ .Values.backend.service.port }}

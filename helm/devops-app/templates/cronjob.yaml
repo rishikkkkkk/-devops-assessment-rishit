@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: backend-health-check
+  namespace: {{ .Values.namespace }}
+
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+
+  jobTemplate:
+    spec:
+
+      template:
+        spec:
+
+          restartPolicy: OnFailure
+
+          containers:
+          - name: health-check
+
+            image: curlimages/curl:latest
+
+            command:
+            - /bin/sh
+            - -c
+
+            args:
+            - |
+              echo "Checking backend health..."
+              curl http://backend-service:3000/health
