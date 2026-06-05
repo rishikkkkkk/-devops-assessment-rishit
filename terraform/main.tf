@@ -11,11 +11,13 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "./modules/eks"
+  source = "git::https://github.com/clouddrove/terraform-aws-eks.git?ref=v1.4.8"
 
-  cluster_name       = "devops-assessment"
-  kubernetes_version = "1.33"
+  cluster_name = "devops-assessment"
+  environment  = var.environment
 
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = module.vpc.private_subnet_ids
+  kubernetes_version = "1.32"
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnet_ids
 }

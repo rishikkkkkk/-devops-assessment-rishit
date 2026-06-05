@@ -1,0 +1,92 @@
+{
+    "cluster": {
+        "name": "devops-assessment",
+        "arn": "arn:aws:eks:us-east-1:068765434760:cluster/devops-assessment",
+        "createdAt": "2026-06-04T22:16:37.660000+00:00",
+        "version": "1.33",
+        "endpoint": "https://805142D115960CBD51025D60193C9848.gr7.us-east-1.eks.amazonaws.com",
+        "roleArn": "arn:aws:iam::068765434760:role/devops-assessment-cluster-20260604221613819100000001",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-022c0daed3cfc816c",
+                "subnet-06964e1ffb1489d4f"
+            ],
+            "securityGroupIds": [
+                "sg-0ca9b784cabe38844"
+            ],
+            "clusterSecurityGroupId": "sg-032afb3f29dd66a55",
+            "vpcId": "vpc-003b63f7fda078e72",
+            "endpointPublicAccess": true,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "0.0.0.0/0"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "172.20.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator"
+                    ],
+                    "enabled": true
+                },
+                {
+                    "types": [
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": false
+                }
+            ]
+        },
+        "identity": {
+            "oidc": {
+                "issuer": "https://oidc.eks.us-east-1.amazonaws.com/id/805142D115960CBD51025D60193C9848"
+            }
+        },
+        "status": "DELETING",
+        "certificateAuthority": {
+            "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJZS9nb0tvMEI4Z1F3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TmpBMk1EUXlNakUzTlRsYUZ3MHpOakEyTURFeU1qSXlOVGxhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUN5N1NldjY3U1pXczNJRGxTSmZ0eStWQlprczJGRnZhTTA1VkNpMTBCZitncERvSzdlV0k2WWhSVCsKZCtIVlRGZG9tbFJyNUhwN0VNaXBNZUxQeGdubkJSeWoraG9uRFVwKzJBeDFjL295WThzVS9WWmg2M0xzWXdmZwpibHFpeGwraSt2bmV5WkVDZzFDMXE2SFhoQkNTbGlvbm93SlgyTVBzbEo5eEVDbU5vN00rSGFwVlR1OE1GZGM5CkJySGNMT2k4Qm1XUm5CWWdNeWRLdVMzVk1vQ2pqZWt0dWc0S1VYcy9GZThvL3E5S1lWTDhXZzVXTUd3Rm9uRVUKVnRlZXJKV052dmlaTWVEck41SHFxa1QrOThnRFEvaHJpUkpjcVd2NDZDZm1wcDVyL01FOGl0aFVnUlI1bzJMaQpDRE9TQk1RZmhNYVd2OGhEUEJZOGFONzN3dzcvQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJRQkZlc0QzRWJ5M082RnBibDhpc3pJTXh4ZmR6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQ2grQVY0OE9uWgp0TnhoaVN1RncycmgyN0hXeDlySUxEejJiWmFOaGp3dGZKdzNWSVdFUXorVW54OFdmc3UrT1MzYmw4MGU0YStvCmFrczZCOXJOd1hZSkZuM2V0Ukp4V1U3TWxzSFMzcjVmb2k2eExNaVk2Q29wTHVaWEpadlRuQlRBOGZDQmQybEIKdDY0cFpOcjh4NjhSVWdCU0tKTDBiOWtpMVY0WXlQWHN1TTBEd0J6blVXTi82RTFMV2FjTSt0SlV0dWVOOVg5NAo3RVFReWIxNk55STVnczNzcjZtTVVUWG9CaHhBaDNUWk41YkN2RkQ2MjhTUE05eGpEam92bjcybnVxV0FLZzQ2CnQ0U3NteXphb0k4dWJ1K1NBWndvd1l0S3I5MjA3c3FwRWJYTyt6c29hUmxSTk9zdnUzcEV0S2c1SDNwWFNFZC8KRC9GZk5PL1FFR25ICi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+        },
+        "platformVersion": "eks.37",
+        "tags": {},
+        "encryptionConfig": [
+            {
+                "resources": [
+                    "secrets"
+                ],
+                "provider": {
+                    "keyArn": "arn:aws:kms:us-east-1:068765434760:key/f421284d-fdaa-4708-9527-f375c495e14b"
+                }
+            }
+        ],
+        "accessConfig": {
+            "authenticationMode": "API_AND_CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        },
+        "computeConfig": {
+            "enabled": false,
+            "nodePools": []
+        },
+        "storageConfig": {
+            "blockStorage": {
+                "enabled": false
+            }
+        },
+        "deletionProtection": false,
+        "controlPlaneScalingConfig": {
+            "tier": "standard"
+        }
+    }
+}
