@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: prom/prometheus
+  tag: latest
+
+service:
+  port: 9090
+
+scrape:
+  target: backend-service:3000
+  metricsPath: /metrics
